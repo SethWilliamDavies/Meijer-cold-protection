@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meijer Cold Protection Dashboard</title>
+<style>
+  :root {
+    --bg:#f5f7fb; --card:#ffffff; --border:#d9e2ec; --text:#16304a; --muted:#66788a;
+    --shadow:0 10px 28px rgba(16,24,40,.06);
+    --red-bg:#fee2e2; --red-bd:#fca5a5; --red-tx:#991b1b;
+    --amber-bg:#ffedd5; --amber-bd:#fdba74; --amber-tx:#9a3412;
+    --green-bg:#dcfce7; --green-bd:#86efac; --green-tx:#166534;
+    --blue-bg:#eff6ff; --blue-bd:#93c5fd; --blue-tx:#1d4ed8;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial,Helvetica,sans-serif; background:var(--bg); color:var(--text); }
+  .wrap { max-width:1220px; margin:0 auto; padding:18px; }
+  .panel, .card { background:var(--card); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); }
+  .panel { padding:20px; margin-bottom:16px; }
+  .card { padding:16px; }
+  h1,h2,h3,p { margin:0; }
+  h1 { font-size:34px; margin-bottom:8px; }
+  h2 { font-size:26px; }
+  h3 { font-size:22px; }
+  .sub { color:var(--muted); line-height:1.45; }
+  .small { color:var(--muted); font-size:14px; }
+  .note { margin-top:8px; color:var(--muted); font-size:13px; }
+  .header-row { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+  .controls { display:flex; gap:10px; align-items:end; flex-wrap:wrap; margin-top:12px; }
+  label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  input { padding:11px 12px; border:1px solid var(--border); border-radius:12px; font-size:15px; width:150px; background:white; }
+  .btn { padding:11px 14px; border:1px solid var(--border); border-radius:12px; background:white; cursor:pointer; font-weight:700; }
+  .btn.primary { background:var(--blue-bg); border-color:var(--blue-bd); color:var(--blue-tx); }
+  .summary-grid, .grid-2 { display:grid; gap:12px; }
+  .summary-grid { grid-template-columns:repeat(4,1fr); }
+  .grid-2 { grid-template-columns:repeat(2,1fr); }
+  .summary { padding:16px; }
+  .summary .label { font-size:13px; color:var(--muted); }
+  .summary .value { margin-top:8px; font-size:30px; font-weight:700; }
+  .breadcrumbs { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+  .crumb { border:none; background:none; padding:0; color:var(--blue-tx); cursor:pointer; font-weight:700; font-size:14px; }
+  .market-title, .store-title { font-size:24px; font-weight:700; }
+  .market-sub, .store-sub { color:var(--muted); margin-top:6px; font-size:14px; }
+  .store-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+  .temp { text-align:right; }
+  .temp .label { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  .temp .value { font-size:34px; font-weight:700; margin-top:4px; }
+  .chips, .counts, .store-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  .chip { display:inline-block; padding:7px 10px; border-radius:999px; border:1px solid var(--border); font-size:12px; font-weight:700; background:#f8fafc; }
+  .chip.red { background:var(--red-bg); border-color:var(--red-bd); color:var(--red-tx); }
+  .chip.amber { background:var(--amber-bg); border-color:var(--amber-bd); color:var(--amber-tx); }
+  .chip.green { background:var(--green-bg); border-color:var(--green-bd); color:var(--green-tx); }
+  .detail-block { margin-top:14px; padding:18px; border:1px solid var(--border); border-radius:18px; background:#fbfcfe; }
+  .detail-block ul { margin:12px 0 0 20px; }
+  .detail-block li { font-size:18px; line-height:1.5; }
+  .hidden { display:none !important; }
+  .loading-bar { margin-top:12px; height:10px; border-radius:999px; background:#e9eef5; overflow:hidden; }
+  .loading-fill { height:100%; width:0%; background:var(--blue-bd); transition:width .2s ease; }
+  .test-banner { margin-top:12px; padding:12px 14px; border-radius:14px; border:1px solid var(--amber-bd); background:var(--amber-bg); color:var(--amber-tx); font-weight:700; }
+  .checkbox-row { display:flex; gap:8px; align-items:center; padding:11px 0; font-weight:700; color:var(--text); }
+  .checkbox-row input { width:auto; }
+
+  .card.action-move { border-color:var(--red-bd); box-shadow:0 10px 28px rgba(153,27,27,.10); }
+  .card.action-cover { border-color:var(--amber-bd); box-shadow:0 10px 28px rgba(154,52,18,.08); }
+  .card.action-none { border-color:var(--green-bd); }
+  .action-pill { display:inline-flex; align-items:center; justify-content:center; width:100%; margin-top:12px; padding:12px 14px; border-radius:14px; font-size:15px; font-weight:900; letter-spacing:.03em; text-transform:uppercase; }
+  .action-pill.move { background:var(--red-bg); border:1px solid var(--red-bd); color:var(--red-tx); }
+  .action-pill.cover { background:var(--amber-bg); border:1px solid var(--amber-bd); color:var(--amber-tx); }
+  .action-pill.none { background:var(--green-bg); border:1px solid var(--green-bd); color:var(--green-tx); }
+  .detail-alert { margin:14px 0; padding:18px; border-radius:20px; border:1px solid var(--border); background:#fff; box-shadow:var(--shadow); }
+  .detail-alert .alert-title { font-size:26px; font-weight:900; letter-spacing:.02em; text-transform:uppercase; }
+  .detail-alert .alert-sub { margin-top:6px; font-size:16px; font-weight:700; }
+  .detail-alert.move { background:var(--red-bg); border-color:var(--red-bd); color:var(--red-tx); }
+  .detail-alert.cover { background:var(--amber-bg); border-color:var(--amber-bd); color:var(--amber-tx); }
+  .detail-alert.none { background:var(--green-bg); border-color:var(--green-bd); color:var(--green-tx); }
+  .instruction-callout { margin-top:10px; padding:12px 14px; border-radius:14px; background:#fff; border:1px solid var(--border); font-size:18px; font-weight:800; color:var(--text); }
+  .product-grid { list-style:none; padding:0; margin:14px 0 0 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .product-grid li { margin:0; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:white; font-size:16px; line-height:1.2; font-weight:700; }
+
+  @media (max-width:900px) {
+    .wrap { padding:10px; }
+    .panel { padding:14px; border-radius:18px; margin-bottom:10px; }
+    .card { padding:14px; border-radius:18px; }
+    h1 { font-size:26px; line-height:1.05; }
+    h2 { font-size:22px; }
+    .sub { font-size:13px; }
+    .note { font-size:12px; }
+    .header-row { display:block; }
+    .controls { display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:end; }
+    input { width:100%; min-height:44px; }
+    .btn { width:100%; min-height:44px; }
+    .checkbox-row { min-height:44px; padding:10px 0; }
+    .summary-grid { grid-template-columns:repeat(2,1fr); gap:8px; }
+    .grid-2 { grid-template-columns:1fr; gap:10px; }
+    .summary { padding:12px; }
+    .summary .label { font-size:11px; }
+    .summary .value { font-size:26px; margin-top:4px; }
+    .store-top { display:grid; grid-template-columns:1fr auto; align-items:start; }
+    .temp { text-align:right; }
+    .temp .value { font-size:32px; }
+    .market-title, .store-title { font-size:22px; }
+    .action-pill { font-size:14px; padding:11px 12px; }
+    .detail-alert .alert-title { font-size:22px; }
+    .detail-alert .alert-sub { font-size:14px; }
+    .detail-block { padding:14px; border-radius:18px; }
+    .product-grid { grid-template-columns:1fr; gap:7px; }
+    .product-grid li { font-size:16px; padding:11px 12px; }
+    .breadcrumbs { font-size:13px; margin:10px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel">
+    <div class="header-row">
+      <div>
+        <h1>Meijer Cold Protection Dashboard</h1>
+        <p class="sub">Mobile-first cold protection guidance using live Fahrenheit weather, grower-week filtering, and a -2° Open-Meteo correction.</p>
+        <div class="note" id="statusText">Preparing weather load…</div>
+        <div class="loading-bar"><div class="loading-fill" id="loadingFill"></div></div>
+      </div>
+      <div class="controls">
+        <div>
+          <label for="weekInput">Grower Week</label>
+          <input id="weekInput" type="number" value="13" min="1" max="53">
+        </div>
+        <div>
+          <label for="testTempInput">Test Temp</label>
+          <input id="testTempInput" type="number" value="32" min="-20" max="80">
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="checkbox-row"><input id="testModeInput" type="checkbox"> <span>Test Mode</span></div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn primary" id="refreshBtn">Refresh Weather</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="testBanner" class="test-banner hidden">TEST MODE ON — fake temperature is being used. Live weather is not controlling the action counts.</div>
+
+  <div class="summary-grid">
+    <div class="panel summary"><div class="label" id="sumLabel1">Markets</div><div class="value" id="sum1">0</div></div>
+    <div class="panel summary"><div class="label" id="sumLabel2">Stores Loaded</div><div class="value" id="sum2">0</div></div>
+    <div class="panel summary"><div class="label" id="sumLabel3">Move Inside Stores</div><div class="value" id="sum3">0</div></div>
+    <div class="panel summary"><div class="label" id="sumLabel4">Cover Stores</div><div class="value" id="sum4">0</div></div>
+  </div>
+
+  <div id="marketView">
+    <div class="panel">
+      <h2>Markets</h2>
+      <p class="small" style="margin-top:6px">Click a market to view stores.</p>
+      <div class="grid-2" id="marketGrid" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div id="storeView" class="hidden">
+    <div class="breadcrumbs">
+      <button class="crumb" id="crumbMarkets">Markets</button>
+      <span class="small">→</span>
+      <span id="crumbRegion" class="small"></span>
+    </div>
+    <div class="panel">
+      <h2 id="storeTitle">Stores</h2>
+      <p class="small" style="margin-top:6px">Tonight low, Move Inside count, and Cover count per store.</p>
+      <div class="grid-2" id="storeGrid" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div id="detailView" class="hidden">
+    <div class="breadcrumbs">
+      <button class="crumb" id="crumbMarkets2">Markets</button>
+      <span class="small">→</span>
+      <button class="crumb" id="crumbStores2"></button>
+      <span class="small">→</span>
+      <span id="crumbStoreNumber" class="small"></span>
+    </div>
+
+    <div class="panel">
+      <h2 id="detailTitle">Store</h2>
+      <p class="small" id="detailMeta" style="margin-top:8px"></p>
+      <div class="chips" style="margin-top:10px">
+        <span class="chip" id="detailBand">Band</span>
+        <span class="chip" id="detailMoveChip">Move Inside: 0</span>
+        <span class="chip" id="detailCoverChip">Cover: 0</span>
+      </div>
+    </div>
+
+    <div id="detailAlert" class="detail-alert hidden">
+      <div id="detailAlertTitle" class="alert-title"></div>
+      <div id="detailAlertSub" class="alert-sub"></div>
+    </div>
+
+    <div id="moveBlock" class="detail-block hidden">
+      <h3>Move Inside</h3>
+      <p id="moveInstruction" class="instruction-callout"></p>
+      <ul id="moveList" class="product-grid"></ul>
+    </div>
+
+    <div id="coverBlock" class="detail-block hidden">
+      <h3>Cover</h3>
+      <p id="coverInstruction" class="instruction-callout"></p>
+      <ul id="coverList" class="product-grid"></ul>
+    </div>
+
+    <div id="emptyBlock" class="detail-block hidden">
+      <h3>No protection needed tonight</h3>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORES = [{"store":"0020","region":"MIC","zip":"49544-1956","city":"Grand Rapids","state":"MI","address":"2425 Alpine Avenue, N.W.","lat":43.01,"lon":-85.69},{"store":"0023","region":"MIC","zip":"48917-2635","city":"Lansing","state":"MI","address":"5125 W. Saginaw Highway","lat":42.74,"lon":-84.62},{"store":"0025","region":"MIC","zip":"48864-1706","city":"Okemos","state":"MI","address":"2055 W. Grand River Avenue","lat":42.72,"lon":-84.43},{"store":"0026","region":"MIC","zip":"49428-9753","city":"Jenison","state":"MI","address":"0-550 Baldwin Street","lat":42.91,"lon":-85.8},{"store":"0027","region":"MIC","zip":"48197-9606","city":"Ypsilanti","state":"MI","address":"3825 Carpenter Road","lat":42.23,"lon":-83.68},{"store":"0029","region":"MIC","zip":"48519-1196","city":"Burton","state":"MI","address":"2333 S. Center Road","lat":42.99,"lon":-83.63},{"store":"0030","region":"MIC","zip":"49202-1239","city":"Jackson","state":"MI","address":"2777 Airport Road","lat":42.27,"lon":-84.45},{"store":"0042","region":"MIC","zip":"48609-4804","city":"Saginaw","state":"MI","address":"8400 Gratiot Road","lat":43.42,"lon":-84.08},{"store":"0043","region":"MIC","zip":"48604-9453","city":"Saginaw","state":"MI","address":"3360 Tittabawassee Road","lat":43.48,"lon":-83.98},{"store":"0044","region":"MIC","zip":"48507-3891","city":"Flint","state":"MI","address":"2474 W. Hill Road","lat":42.95,"lon":-83.73},{"store":"0045","region":"MIC","zip":"49221-4215","city":"Adrian","state":"MI","address":"217 East US Highway 223","lat":41.88,"lon":-84.04},{"store":"0046","region":"MIC","zip":"48116-2399","city":"Brighton","state":"MI","address":"8650 W. Grand River Ave.","lat":42.54,"lon":-83.79},{"store":"0048","region":"MIC","zip":"48706-9213","city":"Bay City","state":"MI","address":"2980 Wilder Road","lat":43.62,"lon":-83.93},{"store":"0050","region":"MIC","zip":"49512-2053","city":"Grand Rapids","state":"MI","address":"5531 28th Street, S.E.","lat":42.91,"lon":-85.53},{"store":"0052","region":"MIC","zip":"48823-1314","city":"East Lansing","state":"MI","address":"1350 W. Lake Lansing Road","lat":42.76,"lon":-84.5},{"store":"0053","region":"MIC","zip":"48328-2137","city":"Waterford","state":"MI","address":"4200 Highland Road","lat":42.65,"lon":-83.37},{"store":"0054","region":"MIC","zip":"48167-1999","city":"Northville","state":"MI","address":"20401 Haggerty Road","lat":42.44,"lon":-83.44},{"store":"0056","region":"MIC","zip":"49202-3853","city":"Jackson","state":"MI","address":"3333 E. Michigan Avenue","lat":42.26,"lon":-84.36},{"store":"0058","region":"OHI","zip":"43017-1627","city":"Dublin","state":"OH","address":"6175 Sawmill Road","lat":40.09,"lon":-83.09},{"store":"0061","region":"OHI","zip":"45005-5516","city":"Franklin","state":"OH","address":"3651 Towne Blvd.","lat":39.5,"lon":-84.33},{"store":"0064","region":"MIC","zip":"48103-9711","city":"Ann Arbor","state":"MI","address":"3145 Ann Arbor-Saline Road","lat":42.24,"lon":-83.77},{"store":"0066","region":"OHI","zip":"45504-1570","city":"Springfield","state":"OH","address":"1500 Hillcrest Avenue","lat":39.94,"lon":-83.83},{"store":"0067","region":"MIC","zip":"48162-9204","city":"Monroe","state":"MI","address":"1700 N. Telegraph Road","lat":41.95,"lon":-83.4},{"store":"0069","region":"MIC","zip":"48858-1062","city":"Mt. Pleasant","state":"MI","address":"1015 Pickard Street","lat":43.61,"lon":-84.77},{"store":"0102","region":"OHI","zip":"45440-1600","city":"Kettering","state":"OH","address":"4075 Wilmington Pike","lat":39.69,"lon":-84.13},{"store":"0103","region":"OHI","zip":"45449-2809","city":"Dayton","state":"OH","address":"5858 Springboro Pike","lat":39.67,"lon":-84.22},{"store":"0104","region":"OHI","zip":"43228-9485","city":"Columbus","state":"OH","address":"1661 Hilliard-Rome Road","lat":39.98,"lon":-83.15},{"store":"0106","region":"OHI","zip":"45415-1125","city":"Englewood","state":"OH","address":"9200 N. Main Street","lat":39.86,"lon":-84.28},{"store":"0107","region":"OHI","zip":"45324-9091","city":"Fairborn","state":"OH","address":"3822 Colonel Glenn Highway","lat":39.78,"lon":-84.07},{"store":"0108","region":"MIC","zip":"48642-7808","city":"Midland","state":"MI","address":"7300 Eastman Avenue","lat":43.66,"lon":-84.25},{"store":"0109","region":"MIC","zip":"48390-2833","city":"Commerce","state":"MI","address":"1703 Haggerty Hwy","lat":42.55,"lon":-83.44},{"store":"0111","region":"OHI","zip":"43302-8990","city":"Marion","state":"OH","address":"2153 Marion-Mt. Gilead Road","lat":40.58,"lon":-83.07},{"store":"0112","region":"OHI","zip":"45373-1017","city":"Troy","state":"OH","address":"1900 W. Main Street","lat":40.06,"lon":-84.24},{"store":"0113","region":"MIC","zip":"48817-1102","city":"Corunna","state":"MI","address":"2591 East M-21","lat":43.0,"lon":-84.12},{"store":"0114","region":"OHI","zip":"43230-1312","city":"Columbus","state":"OH","address":"5050 N. Hamilton Road","lat":40.06,"lon":-82.86},{"store":"0122","region":"MIC","zip":"48393-3308","city":"Wixom","state":"MI","address":"49900 Grand River Avenue","lat":42.5,"lon":-83.54},{"store":"0126","region":"OHI","zip":"44906-1126","city":"Mansfield","state":"OH","address":"1355 N Lexington-Springmill Rd","lat":40.79,"lon":-82.59},{"store":"0135","region":"OHI","zip":"45013-1078","city":"Hamilton","state":"OH","address":"1560 Main Street","lat":39.43,"lon":-84.6},{"store":"0143","region":"OHI","zip":"43035-9115","city":"Lewis Center","state":"OH","address":"Orange Township","lat":40.16,"lon":-83.02},{"store":"0144","region":"OHI","zip":"43130-8814","city":"Lancaster","state":"OH","address":"2900 Columbus Lancaster Rd. NW","lat":39.75,"lon":-82.66},{"store":"0146","region":"ILL","zip":"61822-1233","city":"Champaign","state":"IL","address":"2401 North Prospect Avenue","lat":40.15,"lon":-88.26},{"store":"0147","region":"OHI","zip":"45069-1522","city":"West Chester","state":"OH","address":"7390 Tylersville Road","lat":39.36,"lon":-84.38},{"store":"0148","region":"OHI","zip":"45245-1588","city":"Cincinnati","state":"OH","address":"888 Eastgate North Drive","lat":39.1,"lon":-84.26},{"store":"0150","region":"OHI","zip":"45140-7349","city":"Loveland","state":"OH","address":"3911 W. State Route 22-3","lat":39.29,"lon":-84.29},{"store":"0151","region":"OHI","zip":"41042-4851","city":"Florence","state":"KY","address":"4990 Houston Road","lat":39.01,"lon":-84.64},{"store":"0155","region":"OHI","zip":"47374-1105","city":"Richmond","state":"IN","address":"2507 Chester Blvd","lat":39.87,"lon":-84.89},{"store":"0157","region":"OHI","zip":"45150-4933","city":"Milford","state":"OH","address":"1082 State Route 28, Ste C","lat":39.2,"lon":-84.24},{"store":"0158","region":"MIC","zip":"49525-4545","city":"Grand Rapids","state":"MI","address":"1997 East Beltline Ave. NE","lat":43.0,"lon":-85.59},{"store":"0159","region":"OHI","zip":"45014-5159","city":"Fairfield","state":"OH","address":"6325 S. Gilmore Road","lat":39.31,"lon":-84.53},{"store":"0168","region":"OHI","zip":"41076-2169","city":"Cold Spring","state":"KY","address":"5400 Alexandria Pike","lat":39.0,"lon":-84.42},{"store":"0169","region":"ILL","zip":"60490-1505","city":"Bolingbrook","state":"IL","address":"225 N. Weber Road","lat":41.7,"lon":-88.13},{"store":"0172","region":"MIC","zip":"48843-8564","city":"Howell","state":"MI","address":"3883 E. Grand River Ave.","lat":42.59,"lon":-83.88},{"store":"0173","region":"MIC","zip":"48103-9504","city":"Ann Arbor","state":"MI","address":"5645 Jackson Rd.","lat":42.29,"lon":-83.84},{"store":"0174","region":"MIC","zip":"48854-9270","city":"Mason","state":"MI","address":"550 Hull Road","lat":42.57,"lon":-84.44},{"store":"0176","region":"ILL","zip":"62711-8038","city":"Springfield","state":"IL","address":"4200 Conestoga Drive","lat":39.74,"lon":-89.7},{"store":"0178","region":"ILL","zip":"60504-4912","city":"Aurora","state":"IL","address":"808 N. Route 59","lat":41.77,"lon":-88.21},{"store":"0179","region":"MIC","zip":"49036-9497","city":"Coldwater","state":"MI","address":"620 East Chicago Road","lat":41.94,"lon":-84.96},{"store":"0181","region":"OHI","zip":"43082-6070","city":"Westerville","state":"OH","address":"100 Polaris Parkway","lat":40.15,"lon":-82.93},{"store":"0182","region":"ILL","zip":"60174-1570","city":"Saint Charles","state":"IL","address":"855 S. Randall Rd.","lat":41.9,"lon":-88.34},{"store":"0183","region":"ILL","zip":"60123-3003","city":"Elgin","state":"IL","address":"815 S. Randall Rd.","lat":42.01,"lon":-88.34},{"store":"0187","region":"MIC","zip":"48708-9190","city":"Bay City","state":"MI","address":"595 N. Pine Rd.","lat":43.58,"lon":-83.84},{"store":"0188","region":"MIC","zip":"48150-2200","city":"Livonia","state":"MI","address":"13000 Middlebelt Rd.","lat":42.38,"lon":-83.33},{"store":"0192","region":"ILL","zip":"61107-6835","city":"Rockford","state":"IL","address":"2013 McFarland Rd","lat":42.29,"lon":-88.98},{"store":"0194","region":"MIC","zip":"48813-7318","city":"Charlotte","state":"MI","address":"1167 E. Clinton Trl","lat":42.55,"lon":-84.81},{"store":"0195","region":"MIC","zip":"49014-7573","city":"Battle Creek","state":"MI","address":"6405 B Drive North","lat":42.26,"lon":-85.17},{"store":"0198","region":"ILL","zip":"60108-2243","city":"Bloomingdale","state":"IL","address":"130 S. Gary Ave.","lat":41.96,"lon":-88.12},{"store":"0201","region":"MIC","zip":"48838-3513","city":"Greenville","state":"MI","address":"606 S. Greenville West Dr.","lat":43.18,"lon":-85.28},{"store":"0205","region":"MIC","zip":"49331-8613","city":"Lowell","state":"MI","address":"11901 Fulton St. E.","lat":42.93,"lon":-85.37},{"store":"0206","region":"ILL","zip":"60102-9723","city":"Algonquin","state":"IL","address":"400 S. Randall Rd.","lat":42.17,"lon":-88.34},{"store":"0207","region":"ILL","zip":"61761-2293","city":"Normal","state":"IL","address":"1900 E. College Ave.","lat":40.51,"lon":-88.95},{"store":"0209","region":"MIC","zip":"48820-7993","city":"DeWitt","state":"MI","address":"12821 Cross Over Dr.","lat":42.83,"lon":-84.54},{"store":"0210","region":"MIC","zip":"48837-8411","city":"Grand Ledge","state":"MI","address":"730 E. Saginaw Hwy","lat":42.74,"lon":-84.74},{"store":"0212","region":"OHI","zip":"43068-9817","city":"Reynoldsburg","state":"OH","address":"8000 E. Broad St.","lat":39.99,"lon":-82.79},{"store":"0213","region":"MIC","zip":"48415-9613","city":"Birch Run","state":"MI","address":"9515 Birch Run Road","lat":43.25,"lon":-83.77},{"store":"0214","region":"ILL","zip":"60544-3800","city":"Plainfield","state":"IL","address":"13521 South Route 59","lat":41.64,"lon":-88.2},{"store":"0215","region":"ILL","zip":"60440-2281","city":"Bolingbrook","state":"IL","address":"755 E. Boughton Rd.","lat":41.72,"lon":-88.04},{"store":"0216","region":"MIC","zip":"49534-3554","city":"Grand Rapids","state":"MI","address":"315 Wilson Ave., N.W.","lat":42.97,"lon":-85.78},{"store":"0218","region":"ILL","zip":"60050-1401","city":"McHenry","state":"IL","address":"2253 N. Richmond Rd.","lat":42.36,"lon":-88.27},{"store":"0219","region":"ILL","zip":"60491-8464","city":"Homer Glen","state":"IL","address":"14169 S. Bell Rd.","lat":41.63,"lon":-87.93},{"store":"0223","region":"OHI","zip":"45247-7823","city":"Cincinnati","state":"OH","address":"6550 Harrison Ave.","lat":39.19,"lon":-84.66},{"store":"0224","region":"OHI","zip":"45209-5008","city":"Cincinnati","state":"OH","address":"3195 Geier Drive","lat":39.16,"lon":-84.43},{"store":"0227","region":"MIC","zip":"48383-2744","city":"White Lake","state":"MI","address":"6001 Highland Road","lat":42.65,"lon":-83.53},{"store":"0228","region":"ILL","zip":"60008-4205","city":"Rolling Meadows","state":"IL","address":"1301 Meijer Drive","lat":42.05,"lon":-88.0},{"store":"0234","region":"OHI","zip":"43123-9035","city":"Grove City","state":"OH","address":"2811 London-Groveport Road","lat":39.84,"lon":-83.08},{"store":"0235","region":"OHI","zip":"43040-2543","city":"Marysville","state":"OH","address":"930 Coleman's Crossing Blvd","lat":40.23,"lon":-83.34},{"store":"0237","region":"MIC","zip":"48092-2012","city":"Warren","state":"MI","address":"29505 Mound Rd.","lat":42.51,"lon":-83.05},{"store":"0239","region":"ILL","zip":"60543-7118","city":"Oswego","state":"IL","address":"2700 Route 34","lat":41.7,"lon":-88.31},{"store":"0240","region":"OHI","zip":"45251-1457","city":"Cincinnati","state":"OH","address":"3711 Stone Creek Blvd","lat":39.25,"lon":-84.6},{"store":"0241","region":"OHI","zip":"45424-1412","city":"Huber Heights","state":"OH","address":"7150 Executive Blvd","lat":39.87,"lon":-84.1},{"store":"0245","region":"MIC","zip":"48353-2502","city":"Hartland","state":"MI","address":"2160 Hartland Rd.","lat":42.64,"lon":-83.74},{"store":"0246","region":"OHI","zip":"43110-7400","city":"Canal Winchester","state":"OH","address":"8300 Meijer Drive","lat":39.85,"lon":-82.78},{"store":"0247","region":"ILL","zip":"61802-8044","city":"Urbana","state":"IL","address":"2500 Philo Road","lat":40.09,"lon":-88.19},{"store":"0249","region":"OHI","zip":"43015-6035","city":"Delaware","state":"OH","address":"1380 Sunbury Rd.","lat":40.29,"lon":-83.03},{"store":"0253","region":"MIC","zip":"48823-9627","city":"East Lansing","state":"MI","address":"7157 E. Saginaw St.","lat":42.77,"lon":-84.42},{"store":"0259","region":"MIC","zip":"48473-7900","city":"Swartz Creek","state":"MI","address":"4141 Morrish Rd.","lat":42.97,"lon":-83.83},{"store":"0262","region":"ILL","zip":"60462-6800","city":"Orland Park","state":"IL","address":"15701 S. 71st Ct.","lat":41.6,"lon":-87.79},{"store":"0265","region":"ILL","zip":"60805-2500","city":"Evergreen Park","state":"IL","address":"9200 S. Western Ave.","lat":41.73,"lon":-87.68},{"store":"0268","region":"MIC","zip":"48203-1021","city":"Detroit","state":"MI","address":"1301 W. Eight Mile Rd.","lat":42.44,"lon":-83.12},{"store":"0269","region":"ILL","zip":"61832-1118","city":"Danville","state":"IL","address":"3649 N. Vermilion St.","lat":40.19,"lon":-87.63},{"store":"0270","region":"MIC","zip":"48801-1095","city":"Alma","state":"MI","address":"2805 West Cheesman Rd.","lat":43.4,"lon":-84.66},{"store":"0273","region":"ILL","zip":"60448-2070","city":"Mokena","state":"IL","address":"11305 Lincoln Highway","lat":41.5,"lon":-87.89},{"store":"0274","region":"ILL","zip":"53024-9771","city":"Grafton","state":"WI","address":"1600 Port Washington Rd","lat":43.31,"lon":-87.92},{"store":"0275","region":"ILL","zip":"53072-1403","city":"Pewaukee","state":"WI","address":"N51W24953 Lisbon Rd.","lat":43.11,"lon":-88.24},{"store":"0276","region":"ILL","zip":"53189-7816","city":"Waukesha","state":"WI","address":"801 E. Sunset Drive","lat":42.99,"lon":-88.23},{"store":"0277","region":"ILL","zip":"53222-3211","city":"Wauwatosa","state":"WI","address":"11111 W. Burleigh St.","lat":43.07,"lon":-88.05},{"store":"0280","region":"ILL","zip":"60422-1274","city":"Flossmoor","state":"IL","address":"3800 Vollmer Rd.","lat":41.53,"lon":-87.71},{"store":"0281","region":"ILL","zip":"61115-1627","city":"Machesney Park","state":"IL","address":"1770 W. Lane Rd.","lat":42.37,"lon":-89.01},{"store":"0282","region":"MIC","zip":"49707-8105","city":"Alpena","state":"MI","address":"1251 M 32 W","lat":45.06,"lon":-83.47},{"store":"0283","region":"ILL","zip":"53154-6801","city":"Oak Creek","state":"WI","address":"171 W. Town Square Way","lat":42.9,"lon":-87.92},{"store":"0284","region":"ILL","zip":"53142-4043","city":"Kenosha","state":"WI","address":"7701 Green Bay Rd.","lat":42.56,"lon":-87.89},{"store":"0286","region":"MIC","zip":"48219-3801","city":"Detroit","state":"MI","address":"21431 Grand River Ave.","lat":42.41,"lon":-83.25},{"store":"0289","region":"ILL","zip":"60073-1340","city":"Round Lake Beach","state":"IL","address":"750 E. Rollins Rd.","lat":42.38,"lon":-88.07},{"store":"0291","region":"MIC","zip":"49091-2153","city":"Sturgis","state":"MI","address":"408 W. South St.","lat":41.79,"lon":-85.42},{"store":"0292","region":"ILL","zip":"53220-4021","city":"Greenfield","state":"WI","address":"5800 W. Layton Ave.","lat":42.96,"lon":-87.99},{"store":"0298","region":"ILL","zip":"54303-2606","city":"Howard","state":"WI","address":"2015 Shawano Ave.","lat":44.54,"lon":-88.08},{"store":"0299","region":"ILL","zip":"53095-5754","city":"West Bend","state":"WI","address":"2180 S. Main St.","lat":43.39,"lon":-88.18},{"store":"0300","region":"ILL","zip":"54913-9631","city":"Appleton","state":"WI","address":"3801 N. Richmond St.","lat":44.3,"lon":-88.42},{"store":"0301","region":"ILL","zip":"60915-1233","city":"Bradley","state":"IL","address":"990 N. Kinzie Ave.","lat":41.16,"lon":-87.85},{"store":"0303","region":"MIC","zip":"48846-9475","city":"Ionia","state":"MI","address":"2770 S. State Rd.","lat":42.95,"lon":-85.08},{"store":"0304","region":"ILL","zip":"54220-9302","city":"Manitowoc","state":"WI","address":"1818 S. Rapids Rd.","lat":44.08,"lon":-87.71},{"store":"0305","region":"ILL","zip":"53081-4202","city":"Sheboygan","state":"WI","address":"924 North Taylor Drive","lat":43.75,"lon":-87.75},{"store":"0306","region":"MIC","zip":"48089-1596","city":"Warren","state":"MI","address":"25225 Schoenherr Rd.","lat":42.48,"lon":-82.99},{"store":"0311","region":"MIC","zip":"49508-1412","city":"Grand Rapids","state":"MI","address":"1540 28th St., S.E.","lat":42.91,"lon":-85.63},{"store":"0312","region":"MIC","zip":"49525-2403","city":"Grand Rapids","state":"MI","address":"3757 Plainfield Avenue, N.E.","lat":43.03,"lon":-85.63},{"store":"0313","region":"ILL","zip":"60178-9029","city":"Sycamore","state":"IL","address":"541 Puri Parkway","lat":41.99,"lon":-88.71},{"store":"0315","region":"MIC","zip":"48413-8169","city":"Bad Axe","state":"MI","address":"100 Pigeon Rd.","lat":43.82,"lon":-83.01},{"store":"0316","region":"MIC","zip":"49015-2847","city":"Battle Creek","state":"MI","address":"2191 Columbia Avenue West","lat":42.3,"lon":-85.23},{"store":"0324","region":"MIC","zip":"48911-5719","city":"Lansing","state":"MI","address":"6200 S. Pennsylvania Ave.","lat":42.67,"lon":-84.54},{"store":"0326","region":"MIC","zip":"48661-9607","city":"West Branch","state":"MI","address":"3691 M-55","lat":44.27,"lon":-84.28},{"store":"0330","region":"OHI","zip":"44691","city":"Wooster","state":"OH","address":"4845 Burbank Rd.","lat":40.86,"lon":-81.95},{"store":"0333","region":"MIC","zip":"49242","city":"Hillsdale","state":"MI","address":"3600 West Carleton Rd.","lat":41.95,"lon":-84.66},{"store":"0680","region":"MIC","zip":"48360","city":"Lake Orion","state":"MI","address":"1107 S. Lapeer Rd.","lat":42.77,"lon":-83.24},{"store":"0681","region":"MIC","zip":"48042","city":"Macomb","state":"MI","address":"15375 24 Mile Rd.","lat":42.69,"lon":-82.97},{"store":"0685","region":"MIC","zip":"48307","city":"Rochester Hills","state":"MI","address":"1495 N. Rochester Rd.","lat":42.7,"lon":-83.14}];
+const RULES = [{"category":"Annuals","genus":"Bulbs","name":"Bulbs","b27a":"Cover","b27d":"Cover exposed tables with frost cloth","a2835":"No Action","d2835":"No protection needed","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":10,"lw":20},{"category":"Annuals","genus":"Pansies","name":"Pansies","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":11,"lw":19},{"category":"Annuals","genus":"Strawberries","name":"Strawberries","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":13,"lw":20},{"category":"Annuals","genus":"SuperCals","name":"SuperCals","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":18,"lw":45},{"category":"Annuals","genus":"Lysmachia","name":"Lysmachia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Senetti","name":"Senetti","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":13,"lw":21},{"category":"Annuals","genus":"Snapdragon","name":"Snapdragon","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":12,"lw":20},{"category":"Annuals","genus":"Dusty Miller","name":"Dusty Miller","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":14,"lw":45},{"category":"Annuals","genus":"Osteospermum","name":"Osteospermum","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":12,"lw":21},{"category":"Annuals","genus":"Stocks","name":"Stocks","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":13,"lw":21},{"category":"Annuals","genus":"Dianthus","name":"Dianthus","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":14,"lw":21},{"category":"Annuals","genus":"Calibrachoa","name":"Calibrachoa","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":12,"lw":45},{"category":"Annuals","genus":"Spikes","name":"Spikes","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Ivy","name":"Ivy","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Nemesia","name":"Nemesia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":13,"lw":25},{"category":"Annuals","genus":"Bidens","name":"Bidens","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Diascia","name":"Diascia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":25},{"category":"Annuals","genus":"Ranunculus","name":"Ranunculus","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":14,"lw":21},{"category":"Annuals","genus":"Fuchsia","name":"Fuchsia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":25},{"category":"Annuals","genus":"Sedum","name":"Sedum","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Diamond Frost","name":"Diamond Frost","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Cover","d2835":"Cover exposed tables with frost cloth","a3639":"No Action","d3639":"No protection needed","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Marigolds","name":"Marigolds","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":14,"lw":45},{"category":"Annuals","genus":"Kalanchoe","name":"Kalanchoe","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Lobelia","name":"Lobelia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":14,"lw":25},{"category":"Annuals","genus":"Alyssum","name":"Alyssum","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":25},{"category":"Annuals","genus":"Gerbera Daisy","name":"Gerbera Daisy","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Lantana","name":"Lantana","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":18,"lw":45},{"category":"Annuals","genus":"Verbena","name":"Verbena","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":18,"lw":45},{"category":"Annuals","genus":"Bacopa","name":"Bacopa","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Seed Geranium","name":"Seed Geranium","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Zonal Geranium","name":"Zonal Geranium","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Hibiscus","name":"Hibiscus","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":19,"lw":45},{"category":"Annuals","genus":"Mandevilla","name":"Mandevilla","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":19,"lw":45},{"category":"Annuals","genus":"Dipladenia","name":"Dipladenia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"No Action","d4044":"No protection needed","a4550":"No Action","d4550":"No protection needed","fw":19,"lw":45},{"category":"Annuals","genus":"Impatiens","name":"Impatiens","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Begonias","name":"Begonias","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":14,"lw":45},{"category":"Annuals","genus":"Salvias","name":"Salvias","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Ageratum","name":"Ageratum","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":16,"lw":45},{"category":"Annuals","genus":"Celosia","name":"Celosia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Hypoestes","name":"Hupoestes","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":45},{"category":"Annuals","genus":"Sunpatiens","name":"Sunpatiens","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":18,"lw":45},{"category":"Annuals","genus":"Vinca","name":"Vinca","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":16,"lw":45},{"category":"Annuals","genus":"Ipomea","name":"Ipomea","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":17,"lw":45},{"category":"Annuals","genus":"Moss Rose","name":"Moss Rose","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":17,"lw":45},{"category":"Annuals","genus":"Caladium","name":"Caladium","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":18,"lw":45},{"category":"Annuals","genus":"New Guinea","name":"New Guinea","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":18,"lw":45},{"category":"Annuals","genus":"Coleus","name":"Coleus","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":15,"lw":45},{"category":"Annuals","genus":"Torenia","name":"Torenia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":18,"lw":45},{"category":"Annuals","genus":"Angelonia","name":"Angelonia","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Move Inside","d3639":"Rack product and move inside","a4044":"Move Inside","d4044":"Rack product and move inside","a4550":"Cover","d4550":"Cover exposed tables with frost cloth","fw":18,"lw":45},{"category":"Vegetables","genus":"Strawberries","name":"Strawberries","b27a":"Move Inside","b27d":"Rack product and move inside","a2835":"Move Inside","d2835":"Rack product and move inside","a3639":"Cover","d3639":"Cover exposed tables with frost cloth","a4044":"Cover","d4044":"Cover exposed tables with frost cloth","a4550":"No Action","d4550":"No protection needed","fw":15,"lw":30}];
+let weatherByStore = {};
+let currentRegion = null;
+let currentStore = null;
+let testMode = false;
+let testTemp = 32;
+const CORRECTION_F = 2;
+
+function getBand(temp) {
+  if (temp == null || Number.isNaN(temp)) return "Loading";
+  if (temp < 27) return "Below 27°";
+  if (temp <= 35) return "28–35°";
+  if (temp <= 39) return "36–39°";
+  if (temp <= 44) return "40–44°";
+  return "45–50°";
+}
+
+function getBandClass(temp) {
+  if (temp == null || Number.isNaN(temp)) return "";
+  if (temp < 27) return "red";
+  if (temp <= 44) return "amber";
+  return "green";
+}
+
+function getActionAndDetail(rule, temp) {
+  if (temp < 27) return [rule.b27a, rule.b27d];
+  if (temp <= 35) return [rule.a2835, rule.d2835];
+  if (temp <= 39) return [rule.a3639, rule.d3639];
+  if (temp <= 44) return [rule.a4044, rule.d4044];
+  return [rule.a4550, rule.d4550];
+}
+
+function inWeek(rule, week) {
+  if (rule.fw !== null && week < rule.fw) return false;
+  if (rule.lw !== null && week > rule.lw) return false;
+  return true;
+}
+
+function currentWeek() {
+  return Number(document.getElementById('weekInput').value || 13);
+}
+
+function getStoreLow(store) {
+  return testMode ? testTemp : weatherByStore[store.store];
+}
+
+function updateTestMode() {
+  testMode = document.getElementById('testModeInput').checked;
+  testTemp = Number(document.getElementById('testTempInput').value);
+  if (Number.isNaN(testTemp)) testTemp = 32;
+  const banner = document.getElementById('testBanner');
+  banner.classList.toggle('hidden', !testMode);
+  banner.textContent = 'TEST MODE ON — every store is using fake low of ' + Math.round(testTemp) + '°. Live weather is not controlling the action counts.';
+  const status = document.getElementById('statusText');
+  if (testMode) status.textContent = 'Test Mode is ON. Fake low: ' + Math.round(testTemp) + '°.';
+  renderCurrentView();
+}
+
+function computeActions(low, week) {
+  let move = [], cover = [], mi = "", ci = "";
+  if (low == null || Number.isNaN(low)) return { move, cover, mi, ci };
+  RULES.forEach(rule => {
+    if (!inWeek(rule, week)) return;
+    const [action, detail] = getActionAndDetail(rule, low);
+    if (!action || action === "No Action") return;
+    if (action === "Move Inside") {
+      move.push(rule.name);
+      if (!mi && detail) mi = detail;
+    }
+    if (action === "Cover") {
+      cover.push(rule.name);
+      if (!ci && detail) ci = detail;
+    }
+  });
+  return {
+    move,
+    cover,
+    mi: mi || "Rack product and bring inside if possible",
+    ci: ci || "Cover exposed tables with frost cloth"
+  };
+}
+
+function storeLowText(low) {
+  return (low == null || Number.isNaN(low)) ? "Loading…" : Math.round(low) + "°";
+}
+
+function fetchStoreWeather(store) {
+  const url = `/.netlify/functions/weather?lat=${store.lat}&lon=${store.lon}`;
+  return fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      const times = d.hourly && d.hourly.time ? d.hourly.time : [];
+      const temps = d.hourly && d.hourly.temperature_2m ? d.hourly.temperature_2m : [];
+      if (!times.length || !temps.length) return null;
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(8, 0, 0, 0);
+      if (now.getHours() >= 8) end.setDate(end.getDate() + 1);
+      let min = null;
+      for (let i = 0; i < times.length; i++) {
+        const t = new Date(times[i]);
+        if (t >= now && t <= end) {
+          const val = temps[i];
+          if (val != null && (min === null || val < min)) min = val;
+        }
+      }
+      return min == null ? null : (min - CORRECTION_F);
+    })
+    .catch(() => null);
+}
+
+async function loadWeatherFast() {
+  weatherByStore = {};
+  const status = document.getElementById('statusText');
+  const fill = document.getElementById('loadingFill');
+  status.textContent = 'Loading weather…';
+  fill.style.width = '0%';
+
+  const concurrency = 10;
+  let index = 0;
+  let completed = 0;
+  const total = STORES.length;
+
+  async function worker() {
+    while (index < STORES.length) {
+      const myIndex = index++;
+      const store = STORES[myIndex];
+      const low = await fetchStoreWeather(store);
+      weatherByStore[store.store] = low;
+      completed += 1;
+      fill.style.width = Math.round((completed / total) * 100) + '%';
+      status.textContent = 'Loading weather… ' + completed + ' of ' + total;
+      renderCurrentView();
+    }
+  }
+
+  const workers = [];
+  for (let i = 0; i < concurrency; i++) workers.push(worker());
+  await Promise.all(workers);
+  status.textContent = 'Weather loaded for ' + completed + ' stores. Includes -2° correction.';
+  renderCurrentView();
+}
+
+function calculateStoreSummary(list) {
+  let loadedStores = 0, moveStores = 0, coverStores = 0;
+  list.forEach(store => {
+    const low = getStoreLow(store);
+    const actions = computeActions(low, currentWeek());
+    if (testMode || weatherByStore[store.store] != null) loadedStores += 1;
+    if (actions.move.length > 0) moveStores += 1;
+    if (actions.cover.length > 0) coverStores += 1;
+  });
+  return { loadedStores, moveStores, coverStores };
+}
+
+function renderSummaryForList(list, label1, value1) {
+  const s = calculateStoreSummary(list);
+  document.getElementById('sumLabel1').textContent = label1;
+  document.getElementById('sum1').textContent = value1;
+  document.getElementById('sumLabel2').textContent = 'Stores Loaded';
+  document.getElementById('sum2').textContent = s.loadedStores;
+  document.getElementById('sumLabel3').textContent = 'Move Inside Stores';
+  document.getElementById('sum3').textContent = s.moveStores;
+  document.getElementById('sumLabel4').textContent = 'Cover Stores';
+  document.getElementById('sum4').textContent = s.coverStores;
+}
+
+
+function actionLevel(actions) {
+  if (actions.move.length > 0) return 'move';
+  if (actions.cover.length > 0) return 'cover';
+  return 'none';
+}
+
+function actionLabel(actions) {
+  if (actions.move.length > 0) return 'Move Inside Required';
+  if (actions.cover.length > 0) return 'Cover Required';
+  return 'No Action Needed';
+}
+
+function actionSubtext(actions) {
+  if (actions.move.length > 0) return actions.move.length + ' move inside · ' + actions.cover.length + ' cover';
+  if (actions.cover.length > 0) return actions.cover.length + ' cover';
+  return 'Products are safe based on current rules';
+}
+
+function renderMarkets() {
+  renderSummaryForList(STORES, 'Markets', [...new Set(STORES.map(s => s.region))].length);
+  const grid = document.getElementById('marketGrid');
+  grid.innerHTML = '';
+  const regions = [...new Set(STORES.map(s => s.region))].sort();
+  regions.forEach(region => {
+    const regionStores = STORES.filter(s => s.region === region);
+    const s = calculateStoreSummary(regionStores);
+    const card = document.createElement('div');
+    const level = s.moveStores > 0 ? 'move' : (s.coverStores > 0 ? 'cover' : 'none');
+    const label = s.moveStores > 0 ? 'Move Inside Required' : (s.coverStores > 0 ? 'Cover Required' : 'No Action Needed');
+    card.className = 'card action-' + level;
+    card.innerHTML = `
+      <div class="market-title">${region}</div>
+      <div class="market-sub">${regionStores.length} stores · ${s.loadedStores} weather loaded</div>
+      <div class="action-pill ${level}">${label}</div>
+      <div class="counts">
+        <span class="chip">Move Inside Stores: ${s.moveStores}</span>
+        <span class="chip">Cover Stores: ${s.coverStores}</span>
+      </div>
+      <div style="margin-top:12px"><button class="btn">Open</button></div>
+    `;
+    card.querySelector('button').addEventListener('click', () => showStores(region));
+    grid.appendChild(card);
+  });
+}
+
+function showMarkets() {
+  currentRegion = null;
+  currentStore = null;
+  document.getElementById('marketView').classList.remove('hidden');
+  document.getElementById('storeView').classList.add('hidden');
+  document.getElementById('detailView').classList.add('hidden');
+  renderMarkets();
+}
+
+function renderStores(region) {
+  currentRegion = region;
+  const scopedStores = STORES.filter(s => s.region === region);
+  renderSummaryForList(scopedStores, region + ' Stores', scopedStores.length);
+  document.getElementById('crumbRegion').textContent = region;
+  document.getElementById('storeTitle').textContent = region + ' Stores';
+  const grid = document.getElementById('storeGrid');
+  grid.innerHTML = '';
+
+  scopedStores.sort((a,b) => a.store.localeCompare(b.store)).forEach(store => {
+    const low = getStoreLow(store);
+    const actions = computeActions(low, currentWeek());
+    const card = document.createElement('div');
+    const level = actionLevel(actions);
+    card.className = 'card action-' + level;
+    card.innerHTML = `
+      <div class="store-top">
+        <div>
+          <div class="store-title">Store ${store.store}</div>
+          <div class="store-sub">${store.city}, ${store.state} · ZIP ${store.zip}</div>
+          <div class="chips">
+            <span class="chip ${getBandClass(low)}">Band: ${getBand(low)}</span>
+          </div>
+        </div>
+        <div class="temp">
+          <div class="label">Tonight Low</div>
+          <div class="value">${storeLowText(low)}</div>
+        </div>
+      </div>
+      <div class="action-pill ${level}">${actionLabel(actions)}</div>
+      <div class="store-actions">
+        <span class="chip">Move Inside: ${actions.move.length}</span>
+        <span class="chip">Cover: ${actions.cover.length}</span>
+      </div>
+      <div style="margin-top:12px"><button class="btn">Open</button></div>
+    `;
+    card.querySelector('button').addEventListener('click', () => showDetail(store));
+    grid.appendChild(card);
+  });
+}
+
+function showStores(region) {
+  document.getElementById('marketView').classList.add('hidden');
+  document.getElementById('storeView').classList.remove('hidden');
+  document.getElementById('detailView').classList.add('hidden');
+  renderStores(region);
+}
+
+function renderDetail(store) {
+  currentStore = store;
+  const low = getStoreLow(store);
+  const actions = computeActions(low, currentWeek());
+
+  renderSummaryForList([store], 'Store Summary', 1);
+
+  document.getElementById('crumbStores2').textContent = store.region;
+  document.getElementById('crumbStoreNumber').textContent = 'Store ' + store.store;
+  document.getElementById('detailTitle').textContent = 'Store ' + store.store;
+  document.getElementById('detailMeta').textContent = store.city + ', ' + store.state + ' · ' + store.address + ' · Market ' + store.region + ' · Tonight Low: ' + storeLowText(low);
+
+  const band = document.getElementById('detailBand');
+  band.className = 'chip ' + getBandClass(low);
+  band.textContent = 'Band: ' + getBand(low);
+  document.getElementById('detailMoveChip').textContent = 'Move Inside: ' + actions.move.length;
+  document.getElementById('detailCoverChip').textContent = 'Cover: ' + actions.cover.length;
+
+  const detailLevel = actionLevel(actions);
+  const detailAlert = document.getElementById('detailAlert');
+  detailAlert.className = 'detail-alert ' + detailLevel;
+  detailAlert.classList.remove('hidden');
+  document.getElementById('detailAlertTitle').textContent = actionLabel(actions);
+  document.getElementById('detailAlertSub').textContent = actionSubtext(actions);
+
+  document.getElementById('moveInstruction').textContent = actions.mi;
+  document.getElementById('coverInstruction').textContent = actions.ci;
+
+  const moveList = document.getElementById('moveList');
+  const coverList = document.getElementById('coverList');
+  moveList.innerHTML = '';
+  coverList.innerHTML = '';
+  actions.move.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    moveList.appendChild(li);
+  });
+  actions.cover.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    coverList.appendChild(li);
+  });
+
+  document.getElementById('moveBlock').classList.toggle('hidden', actions.move.length === 0);
+  document.getElementById('coverBlock').classList.toggle('hidden', actions.cover.length === 0);
+  document.getElementById('emptyBlock').classList.toggle('hidden', (actions.move.length + actions.cover.length) > 0);
+}
+
+function showDetail(store) {
+  document.getElementById('marketView').classList.add('hidden');
+  document.getElementById('storeView').classList.add('hidden');
+  document.getElementById('detailView').classList.remove('hidden');
+  renderDetail(store);
+}
+
+function renderCurrentView() {
+  if (!document.getElementById('detailView').classList.contains('hidden') && currentStore) {
+    renderDetail(currentStore);
+  } else if (!document.getElementById('storeView').classList.contains('hidden') && currentRegion) {
+    renderStores(currentRegion);
+  } else {
+    renderMarkets();
+  }
+}
+
+document.getElementById('weekInput').addEventListener('input', renderCurrentView);
+document.getElementById('testModeInput').addEventListener('change', updateTestMode);
+document.getElementById('testTempInput').addEventListener('input', updateTestMode);
+document.getElementById('refreshBtn').addEventListener('click', loadWeatherFast);
+document.getElementById('crumbMarkets').addEventListener('click', showMarkets);
+document.getElementById('crumbMarkets2').addEventListener('click', showMarkets);
+document.getElementById('crumbStores2').addEventListener('click', () => showStores(currentRegion));
+
+showMarkets();
+loadWeatherFast();
+</script>
+</body>
+</html>
