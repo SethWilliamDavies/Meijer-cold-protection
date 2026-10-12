@@ -6,9 +6,34 @@
 <title>Meijer Cold Protection Dashboard</title>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--bd:#d8e1eb;--tx:#17324d;--muted:#6b7b8c;--blue:#1d4ed8;--bluebg:#eff6ff;--red:#991b1b;--redbg:#fee2e2;--redbd:#fca5a5;--amber:#9a3412;--amberbg:#ffedd5;--amberbd:#fdba74;--green:#166534;--greenbg:#dcfce7;--greenbd:#86efac;--shadow:0 8px 24px rgba(16,24,40,.07)}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Arial,Helvetica,sans-serif}body{padding-bottom:82px}button,input{font:inherit}.hidden{display:none!important}.app{max-width:760px;margin:auto}.top{position:sticky;top:0;z-index:20;background:rgba(244,247,251,.97);border-bottom:1px solid var(--bd);padding:14px}.toprow,.sectionhead,.cardtop,.actionrow{display:flex;justify-content:space-between;gap:10px}.toprow{align-items:flex-start}h1,h2,h3,p{margin:0}h1{font-size:25px}h2{font-size:23px}.sub,.note,.meta{color:var(--muted)}.sub{font-size:13px;margin-top:4px}.note{font-size:12px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.control{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:9px 10px}.control label{display:block;font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:5px}.control input[type=number]{width:100%;border:0;outline:0;font-size:17px;font-weight:800}.toggle{display:flex;align-items:center;gap:8px;font-weight:800}.toggle input{width:18px;height:18px}.btn{border:1px solid var(--bd);background:#fff;border-radius:12px;padding:11px 13px;font-weight:900}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.status{font-size:12px;color:var(--muted);margin-top:8px}.bar{height:7px;background:#e5ebf1;border-radius:999px;overflow:hidden;margin-top:7px}.bar>div{height:100%;width:0;background:#93c5fd}.banner{margin:10px 14px 0;padding:11px;border:1px solid var(--amberbd);background:var(--amberbg);color:var(--amber);border-radius:14px;font-weight:800;font-size:13px}.content{padding:14px}.sectionhead{align-items:end;margin-bottom:10px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.sum{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:10px}.sum b{font-size:23px;display:block;margin-top:3px}.sum span{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800}.list,.settings{display:grid;gap:9px}.store{width:100%;text-align:left;background:#fff;border:1px solid var(--bd);border-radius:16px;padding:13px;box-shadow:var(--shadow);color:inherit}.store.move{border-color:var(--redbd)}.store.cover{border-color:var(--amberbd)}.store.none{border-color:var(--greenbd)}.cardtop{align-items:flex-start}.num{font-size:21px;font-weight:900}.meta{font-size:13px;margin-top:3px}.temp{text-align:right;font-size:29px;font-weight:900}.templabel{font-size:9px;text-transform:uppercase;color:var(--muted);font-weight:800}.actionrow{align-items:center;margin-top:10px}.pill{border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;text-transform:uppercase}.pill.move{background:var(--redbg);border:1px solid var(--redbd);color:var(--red)}.pill.cover{background:var(--amberbg);border:1px solid var(--amberbd);color:var(--amber)}.pill.none{background:var(--greenbg);border:1px solid var(--greenbd);color:var(--green)}.counts{color:var(--muted);font-size:12px;font-weight:700}.search{width:100%;border:1px solid var(--bd);background:#fff;border-radius:14px;padding:12px;font-size:16px;margin-bottom:10px}.filters{display:flex;gap:7px;overflow:auto;padding-bottom:8px}.filter{white-space:nowrap;border:1px solid var(--bd);background:#fff;border-radius:999px;padding:8px 11px;font-weight:800}.filter.active{background:var(--bluebg);color:var(--blue);border-color:#93c5fd}.empty{background:#fff;border:1px dashed var(--bd);border-radius:16px;padding:24px;text-align:center;color:var(--muted)}.select{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:12px}.select input{width:20px;height:20px}.select b{font-size:17px}.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(3,1fr);padding:7px 8px calc(7px + env(safe-area-inset-bottom));gap:6px}.nav button{border:0;background:transparent;border-radius:12px;padding:9px 6px;color:var(--muted);font-size:12px;font-weight:800}.nav button.active{background:var(--bluebg);color:var(--blue)}.savebar{position:fixed;left:0;right:0;bottom:68px;z-index:35;background:#fff;border-top:1px solid var(--bd);padding:10px 12px;box-shadow:0 -8px 24px rgba(16,24,40,.08)}.saveinner{max-width:760px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:9px}.savecount{grid-column:1/-1;font-size:12px;color:var(--muted);font-weight:800}.settings{padding-bottom:100px}.detailcard,.detailsection{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:14px;box-shadow:var(--shadow)}.detailsection{margin-top:10px}.alert{margin-top:10px;border-radius:14px;padding:13px;font-weight:900}.alert.move{background:var(--redbg);border:1px solid var(--redbd);color:var(--red)}.alert.cover{background:var(--amberbg);border:1px solid var(--amberbd);color:var(--amber)}.alert.none{background:var(--greenbg);border:1px solid var(--greenbd);color:var(--green)}.instruction{margin-top:8px;padding:10px;border:1px solid var(--bd);border-radius:12px;background:#f8fafc;font-weight:800}.products{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:7px}.products li{border:1px solid var(--bd);border-radius:11px;padding:10px;font-weight:700}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Arial,Helvetica,sans-serif}body{padding-bottom:82px}button,input{font:inherit}.hidden{display:none!important}.app{max-width:760px;margin:auto}.top{position:sticky;top:0;z-index:20;background:rgba(244,247,251,.97);border-bottom:1px solid var(--bd);padding:14px}.toprow,.sectionhead,.cardtop,.actionrow{display:flex;justify-content:space-between;gap:10px}.toprow{align-items:flex-start}h1,h2,h3,p{margin:0}h1{font-size:25px}h2{font-size:23px}.sub,.note,.meta{color:var(--muted)}.sub{font-size:13px;margin-top:4px}.note{font-size:12px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.control{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:9px 10px}.control label{display:block;font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:5px}.control input[type=number]{width:100%;border:0;outline:0;font-size:17px;font-weight:800}.toggle{display:flex;align-items:center;gap:8px;font-weight:800}.toggle input{width:18px;height:18px}.btn{border:1px solid var(--bd);background:#fff;border-radius:12px;padding:11px 13px;font-weight:900}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.status{font-size:12px;color:var(--muted);margin-top:8px}.bar{height:7px;background:#e5ebf1;border-radius:999px;overflow:hidden;margin-top:7px}.bar>div{height:100%;width:0;background:#93c5fd}.banner{margin:10px 14px 0;padding:11px;border:1px solid var(--amberbd);background:var(--amberbg);color:var(--amber);border-radius:14px;font-weight:800;font-size:13px}.content{padding:14px}.sectionhead{align-items:end;margin-bottom:10px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.sum{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:10px}.sum b{font-size:23px;display:block;margin-top:3px}.sum span{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800}.list,.settings{display:grid;gap:9px}.store{width:100%;text-align:left;background:#fff;border:1px solid var(--bd);border-radius:16px;padding:13px;box-shadow:var(--shadow);color:inherit}.store.move{border-color:var(--redbd)}.store.cover{border-color:var(--amberbd)}.store.none{border-color:var(--greenbd)}.cardtop{align-items:flex-start}.num{font-size:21px;font-weight:900}.meta{font-size:13px;margin-top:3px}.temp{text-align:right;font-size:29px;font-weight:900}.templabel{font-size:9px;text-transform:uppercase;color:var(--muted);font-weight:800}.actionrow{align-items:center;margin-top:10px}.pill{border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;text-transform:uppercase}.pill.move{background:var(--redbg);border:1px solid var(--redbd);color:var(--red)}.pill.cover{background:var(--amberbg);border:1px solid var(--amberbd);color:var(--amber)}.pill.none{background:var(--greenbg);border:1px solid var(--greenbd);color:var(--green)}.counts{color:var(--muted);font-size:12px;font-weight:700}.search{width:100%;border:1px solid var(--bd);background:#fff;border-radius:14px;padding:12px;font-size:16px;margin-bottom:10px}.filters{display:flex;gap:7px;overflow:auto;padding-bottom:8px}.filter{white-space:nowrap;border:1px solid var(--bd);background:#fff;border-radius:999px;padding:8px 11px;font-weight:800}.filter.active{background:var(--bluebg);color:var(--blue);border-color:#93c5fd}.empty{background:#fff;border:1px dashed var(--bd);border-radius:16px;padding:24px;text-align:center;color:var(--muted)}.select{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;background:#fff;border:1px solid var(--bd);border-radius:14px;padding:12px}.select input{width:20px;height:20px}.select b{font-size:17px}.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(3,1fr);padding:7px 8px calc(7px + env(safe-area-inset-bottom));gap:6px}.nav button{border:0;background:transparent;border-radius:12px;padding:9px 6px;color:var(--muted);font-size:12px;font-weight:800}.nav button.active{background:var(--bluebg);color:var(--blue)}.savebar{position:fixed;left:0;right:0;bottom:68px;z-index:35;background:#fff;border-top:1px solid var(--bd);padding:10px 12px;box-shadow:0 -8px 24px rgba(16,24,40,.08)}.saveinner{max-width:760px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:9px}.savecount{grid-column:1/-1;font-size:12px;color:var(--muted);font-weight:800}.settings{padding-bottom:100px}.detailcard,.detailsection{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:14px;box-shadow:var(--shadow)}.detailsection{margin-top:10px}.alert{margin-top:10px;border-radius:14px;padding:13px;font-weight:900}.alert.move{background:var(--redbg);border:1px solid var(--redbd);color:var(--red)}.alert.cover{background:var(--amberbg);border:1px solid var(--amberbd);color:var(--amber)}.pill.unavailable{background:#e2e8f0;color:#334155}.alert.unavailable{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}.alert.none{background:var(--greenbg);border:1px solid var(--greenbd);color:var(--green)}.instruction{margin-top:8px;padding:10px;border:1px solid var(--bd);border-radius:12px;background:#f8fafc;font-weight:800}.products{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:7px}.products li{border:1px solid var(--bd);border-radius:11px;padding:10px;font-weight:700}
 @media(min-width:720px){.nav{left:50%;transform:translateX(-50%);max-width:760px}.savebar{left:50%;transform:translateX(-50%);max-width:760px}}
+
+/* Store QR instruction view: isolated from navigation, optimized for small screens. */
+#qrview{max-width:760px;margin:0 auto;padding:22px 15px 40px}
+.qr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.qr-label{font-size:13px;text-transform:uppercase;font-weight:800;letter-spacing:.075em;color:#4b5563}
+.qr-store{font-size:clamp(42px,10vw,72px);font-weight:900;line-height:1.05;color:#102c55;margin:6px 0}
+.qr-meta{font-size:16px;color:#526277}
+.qr-low{font-weight:900;font-size:clamp(38px,9vw,60px);color:#102c55}
+.qr-panel{background:white;border:1px solid #d6e0ed;border-radius:17px;padding:18px;margin-top:14px}
+.qr-outcome{border-radius:14px;padding:17px;font-weight:900;font-size:20px;margin-top:15px}
+.qr-outcome.move{background:#fee2e2;color:#991b1b}
+.qr-outcome.cover{background:#fef3c7;color:#92400e}
+.qr-outcome.none{background:#dcfce7;color:#166534}
+.qr-outcome.unavailable{background:#f1f5f9;color:#334155}
+.qr-products{padding-left:23px;line-height:1.65;font-size:17px;font-weight:650}
+.qr-products li{margin:4px 0}
+.qr-help{font-size:13px;color:#4b5563;margin:9px 0}
+.qr-demo-banner{background:#7f1d1d;color:#fff;font-weight:900;padding:14px;border-radius:11px;margin-bottom:12px;text-align:center;letter-spacing:.025em}
+.qr-demo-controls{display:flex;flex-wrap:wrap;align-items:end;gap:10px}
+.qr-demo-controls label{display:grid;gap:6px;font-size:13px;font-weight:800}
+.qr-demo-controls input{width:110px;padding:9px;border:1px solid #a8b4c5;border-radius:9px;font-size:17px}
+.qr-demo-controls input[type=number]{appearance:textfield}
+body.qr-mode .app{display:none}
+body.qr-mode #qrview{display:block!important}
 </style></head><body>
+<section id="qrview" class="hidden" aria-live="polite"></section>
 <div class="app">
 <header class="top">
 <div class="toprow"><div><h1>Meijer Cold Protection</h1><p class="sub">Store-level overnight protection guidance</p></div><button id="refresh" class="btn">Refresh</button></div>
@@ -934,40 +959,77 @@ const KEY='meijerColdProtectionSelectedStores',CORRECTION_F=2;
 let weatherByStore={},currentView='my',returnView='my',allMarket='ALL',settingsMarket='ALL';
 let selected=loadSelected(),draft=new Set(selected);
 function loadSelected(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return new Set(Array.isArray(x)?x:[])}catch{return new Set()}}
-function week() {
-  const week1Starts = {
-    2027: "2027-01-03"
-  };
-
-  const today = new Date();
-  today.setHours(12, 0, 0, 0);
-
-  const years = Object.keys(week1Starts)
-    .map(Number)
-    .sort((a, b) => b - a);
-
-  for (const year of years) {
-    const [y, m, d] = week1Starts[year].split("-").map(Number);
-    const start = new Date(y, m - 1, d, 12);
-
-    if (today >= start) {
-      const days = Math.round((today - start) / 86400000);
-      return Math.floor(days / 7) + 1;
-    }
+// Enter the official AmericanHort Week 1 date here each November.
+const WEEK1_STARTS = { 2027: '2027-01-03' };
+const QUERY = new URLSearchParams(location.search);
+const QR_STORE_ID = QUERY.get('view')==='qr' ? QUERY.get('store') : null;
+const IS_QR = QUERY.get('view')==='qr';
+const IS_DEMO = IS_QR && QUERY.get('demo')==='1';
+let demoWeek = 13, demoTemperature = 30;
+let qrTimezone = null;
+// For demo mode, determine time zone geographically (all pilot locations are in MI/ET).
+// Live mode uses the forecast service's exact IANA timezone for the store.
+function approximateStoreTimezone(s){
+  if(!s)return 'America/Detroit';
+  if(s.state==='IL'||s.state==='WI')return 'America/Chicago';
+  if(s.state==='MI' && s.lon<-86.4 && s.lat>45)return 'America/Chicago';
+  if(s.state==='IN' && s.lon<-86.6)return 'America/Chicago';
+  if(s.state==='KY' && s.lon<-85.0)return 'America/Chicago';
+  return 'America/Detroit';
+}
+function localDateParts(timezone, when=new Date()){
+  const f = new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23',minute:'2-digit'});
+  const p=Object.fromEntries(f.formatToParts(when).filter(x=>x.type!=='literal').map(x=>[x.type,Number(x.value)]));
+  return {year:p.year,month:p.month,day:p.day,hour:p.hour,minute:p.minute};
+}
+function growerWeek(timezone){
+  const p=localDateParts(timezone);
+  const dateUTC=Date.UTC(p.year,p.month-1,p.day);
+  const years=Object.keys(WEEK1_STARTS).map(Number).sort((a,b)=>b-a);
+  for(const y of years){
+    const [yr,mo,da]=WEEK1_STARTS[y].split('-').map(Number);
+    const startUTC=Date.UTC(yr,mo-1,da);
+    if(dateUTC>=startUTC)return Math.floor((dateUTC-startUTC)/604800000)+1;
   }
-
   return null;
 }
+function week(){return IS_DEMO?demoWeek:growerWeek(qrTimezone||'America/Detroit');}
+function scheduledRules(w){return Number.isInteger(w)&&w>=1&&w<=53?RULES.filter(r=>inWeek(r,w)):[];}
+// Weather hours from Open-Meteo are local wall-clock hours in the response timezone.
+// Scope to 18:00-08:00 if prior to 18:00, or remaining hours up to 08:00 if later.
+function overnightLow(data,timezone,now=new Date()){
+  const times=data?.hourly?.time,temps=data?.hourly?.temperature_2m;
+  if(!Array.isArray(times)||!Array.isArray(temps)||times.length!==temps.length)return null;
+  const p=localDateParts(timezone,now);
+  const date=new Date(Date.UTC(p.year,p.month-1,p.day));
+  const currentMins=p.hour*60+p.minute;
+  if(currentMins<8*60) date.setUTCDate(date.getUTCDate()-1);
+  const nightDate=date.toISOString().slice(0,10);
+  date.setUTCDate(date.getUTCDate()+1);
+  const morningDate=date.toISOString().slice(0,10);
+  const start=nightDate+'T18:00',end=morningDate+'T08:00';
+  const nowKey=[p.year,String(p.month).padStart(2,'0'),String(p.day).padStart(2,'0')].join('-')+'T'+String(p.hour).padStart(2,'0')+':00';
+  let min=null;
+  for(let i=0;i<times.length;i++){
+    const t=times[i];
+    if(t>=start&&t<=end&&t>=nowKey){
+      const v=temps[i];
+      if(typeof v==='number'&&Number.isFinite(v)&&(min===null||v<min))min=v;
+    }
+  }
+  return min===null?null:min-CORRECTION_F;
+}
 function low(s){return weatherByStore[s.store]}
-function inWeek(r,w){return !((r.fw!==null&&w<r.fw)||(r.lw!==null&&w>r.lw))}
+function inWeek(r,w){return Number.isInteger(w)&&w>=1&&!((r.fw!==null&&w<r.fw)||(r.lw!==null&&w>r.lw))}
 function action(r,t){if(t<27)return[r.b27a,r.b27d];if(t<=35)return[r.a2835,r.d2835];if(t<=39)return[r.a3639,r.d3639];if(t<=44)return[r.a4044,r.d4044];return[r.a4550,r.d4550]}
 function actions(t,w){let move=[],cover=[],mi='',ci='';if(t==null||Number.isNaN(t))return{move,cover,mi,ci};RULES.forEach(r=>{if(!inWeek(r,w))return;const[a,d]=action(r,t);if(a==='Move Inside'){move.push(r.name);if(!mi)mi=d||''}if(a==='Cover'){cover.push(r.name);if(!ci)ci=d||''}});return{move,cover,mi:mi||'Rack product and bring inside if possible',ci:ci||'Cover exposed tables with frost cloth'}}
 function level(a){return a.move.length?'move':a.cover.length?'cover':'none'}
 function label(a){return a.move.length?'Move Inside':a.cover.length?'Cover':'No Action'}
+function unavailable(s){return low(s)===null||low(s)===undefined||!Number.isInteger(week());}
 function tempText(t){return t==null||Number.isNaN(t)?'—':Math.round(t)+'°'}
 function sorted(x){return [...x].sort((a,b)=>Number(a.store)-Number(b.store))}
 function summary(list){let m=0,c=0;list.forEach(s=>{const a=actions(low(s),week());if(a.move.length)m++;else if(a.cover.length)c++});return `<div class="sum"><span>Stores</span><b>${list.length}</b></div><div class="sum"><span>Move Inside</span><b>${m}</b></div><div class="sum"><span>Cover</span><b>${c}</b></div>`}
-function card(s){const t=low(s),a=actions(t,week()),l=level(a);return `<button class="store ${l}" data-store="${s.store}"><div class="cardtop"><div><div class="num">Store ${s.store}</div><div class="meta">${s.city}, ${s.state} · ${s.region}</div></div><div><div class="templabel">Tonight Low</div><div class="temp">${tempText(t)}</div></div></div><div class="actionrow"><span class="pill ${l}">${label(a)}</span><span class="counts">${a.move.length} move · ${a.cover.length} cover</span></div></button>`}
+function card(s){const t=low(s),a=actions(t,week()),l=level(a),missing=unavailable(s);return `<button class="store ${missing?'unavailable':l}" data-store="${s.store}"><div class="cardtop"><div><div class="num">Store ${s.store}</div><div class="meta">${s.city}, ${s.state} · ${s.region}</div></div><div><div class="templabel">Tonight Low</div><div class="temp">${tempText(t)}</div></div></div><div class="actionrow"><span class="pill ${missing?'unavailable':l}">${missing?'Recommendations unavailable':label(a)}</span><span class="counts">${missing?'Weather or calendar unavailable':`${a.move.length} move · ${a.cover.length} cover`}</span></div></button>`}
 function bindCards(el){el.querySelectorAll('[data-store]').forEach(b=>b.onclick=()=>showDetail(STORES.find(s=>s.store===b.dataset.store)))}
 function renderMy(){const list=sorted(STORES.filter(s=>selected.has(s.store)));document.getElementById('mycount').textContent=list.length?`${list.length} selected`:'No stores selected yet';document.getElementById('mysummary').innerHTML=summary(list);const el=document.getElementById('mylist');if(list.length){el.innerHTML=list.map(card).join('');bindCards(el);return}el.innerHTML='<div class="empty"><b>No stores selected yet.</b><p style="margin:8px 0 16px;line-height:1.45">Choose the stores you manage so they appear here each time you open the dashboard.</p><button id="selectMyStoresBtn" class="btn primary" style="width:100%">Select My Stores</button></div>';document.getElementById('selectMyStoresBtn').onclick=()=>show('settings')}
 function markets(id,active,cb){const vals=['ALL',...new Set(STORES.map(s=>s.region).sort())],el=document.getElementById(id);el.innerHTML=vals.map(v=>`<button class="filter ${v===active?'active':''}" data-market="${v}">${v==='ALL'?'All':v}</button>`).join('');el.querySelectorAll('[data-market]').forEach(b=>b.onclick=()=>cb(b.dataset.market))}
@@ -975,15 +1037,78 @@ function match(s,q){q=q.trim().toLowerCase();return !q||[s.store,s.city,s.state,
 function renderAll(){markets('allfilters',allMarket,v=>{allMarket=v;renderAll()});const q=document.getElementById('search').value,list=sorted(STORES.filter(s=>(allMarket==='ALL'||s.region===allMarket)&&match(s,q)));document.getElementById('allsummary').innerHTML=summary(list);const el=document.getElementById('alllist');el.innerHTML=list.length?list.map(card).join(''):'<div class="empty">No matching stores found.</div>';bindCards(el)}
 function updateCount(){document.getElementById('savecount').textContent=`${draft.size} store${draft.size===1?'':'s'} selected`}
 function renderSettings(){markets('settingsfilters',settingsMarket,v=>{settingsMarket=v;renderSettings()});const q=document.getElementById('settingssearch').value,list=sorted(STORES.filter(s=>(settingsMarket==='ALL'||s.region===settingsMarket)&&match(s,q))),el=document.getElementById('settingslist');el.innerHTML=list.map(s=>`<label class="select"><input type="checkbox" data-select="${s.store}" ${draft.has(s.store)?'checked':''}><div><b>Store ${s.store}</b><div class="meta">${s.city}, ${s.state} · ${s.region}</div></div></label>`).join('');el.querySelectorAll('[data-select]').forEach(x=>x.onchange=()=>{x.checked?draft.add(x.dataset.select):draft.delete(x.dataset.select);updateCount()});updateCount()}
-function renderDetail(s){const t=low(s),a=actions(t,week()),l=level(a),el=document.getElementById('detailview');el.innerHTML=`<div class="sectionhead"><button id="back" class="btn">← Back</button><div style="text-align:right"><h2>Store ${s.store}</h2><div class="note">${s.city}, ${s.state}</div></div></div><div class="detailcard"><div class="cardtop"><div><div class="templabel">Market</div><div class="num">${s.region}</div></div><div><div class="templabel">Tonight Low</div><div class="temp">${tempText(t)}</div></div></div><div class="alert ${l}">${label(a)} · ${a.move.length} move inside · ${a.cover.length} cover</div></div>${a.move.length?`<div class="detailsection"><h3>Move Inside</h3><div class="instruction">${a.mi}</div><ul class="products">${a.move.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}${a.cover.length?`<div class="detailsection"><h3>Cover</h3><div class="instruction">${a.ci}</div><ul class="products">${a.cover.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}${!a.move.length&&!a.cover.length?'<div class="detailsection"><h3>No protection needed tonight</h3></div>':''}`;document.getElementById('back').onclick=()=>show(returnView)}
-function showDetail(s){returnView=currentView;currentView='detail';['myview','allview','settingsview'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('detailview').classList.remove('hidden');document.getElementById('savebar').classList.add('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));renderDetail(s);scrollTo(0,0)}
+function renderDetail(s){const t=low(s),a=actions(t,week()),l=level(a),missing=unavailable(s),el=document.getElementById('detailview');el.innerHTML=`<div class="sectionhead"><button id="back" class="btn">← Back</button><div style="text-align:right"><h2>Store ${s.store}</h2><div class="note">${s.city}, ${s.state}</div></div></div><div class="detailcard"><div class="cardtop"><div><div class="templabel">Market</div><div class="num">${s.region}</div></div><div><div class="templabel">Tonight Low</div><div class="temp">${tempText(t)}</div></div></div><div class="alert ${missing?'unavailable':l}">${missing?'Recommendations unavailable':`${label(a)} · ${a.move.length} move inside · ${a.cover.length} cover`}</div></div>${a.move.length?`<div class="detailsection"><h3>Move Inside</h3><div class="instruction">${a.mi}</div><ul class="products">${a.move.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}${a.cover.length?`<div class="detailsection"><h3>Cover</h3><div class="instruction">${a.ci}</div><ul class="products">${a.cover.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}${!missing&&!a.move.length&&!a.cover.length?'<div class="detailsection"><h3>No protection needed tonight</h3></div>':''}`;document.getElementById('back').onclick=()=>show(returnView)}
+function showDetail(s){returnView=currentView;currentView='detail';['myview','allview','settingsview'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('detailview').classList.remove('hidden');document.getElementById('savebar').classList.add('hidden');
+document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));renderDetail(s);scrollTo(0,0)}
 function show(v){currentView=v;document.getElementById('myview').classList.toggle('hidden',v!=='my');document.getElementById('allview').classList.toggle('hidden',v!=='all');document.getElementById('settingsview').classList.toggle('hidden',v!=='settings');document.getElementById('detailview').classList.add('hidden');document.getElementById('savebar').classList.toggle('hidden',v!=='settings');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));if(v==='my')renderMy();if(v==='all')renderAll();if(v==='settings'){draft=new Set(selected);renderSettings()}scrollTo(0,0)}
 function rerender(){if(currentView==='my')renderMy();else if(currentView==='all')renderAll();else if(currentView==='settings')renderSettings()}
-function fetchWeather(s){return fetch(`/.netlify/functions/weather?lat=${s.lat}&lon=${s.lon}`).then(r=>r.json()).then(d=>{const times=d.hourly?.time||[],temps=d.hourly?.temperature_2m||[];if(!times.length||!temps.length)return null;const now=new Date(),end=new Date(now);end.setHours(8,0,0,0);if(now.getHours()>=8)end.setDate(end.getDate()+1);let min=null;for(let i=0;i<times.length;i++){const t=new Date(times[i]);if(t>=now&&t<=end){const v=temps[i];if(v!=null&&(min===null||v<min))min=v}}return min==null?null:min-CORRECTION_F}).catch(()=>null)}
-async function loadWeather(){weatherByStore={};const st=document.getElementById('status'),fill=document.getElementById('fill');st.textContent='Loading weather…';fill.style.width='0%';let i=0,done=0;async function worker(){while(i<STORES.length){const s=STORES[i++];weatherByStore[s.store]=await fetchWeather(s);done++;fill.style.width=Math.round(done/STORES.length*100)+'%';st.textContent=`Loading weather… ${done} of ${STORES.length}`;rerender()}}await Promise.all(Array.from({length:10},worker));st.textContent=`Weather loaded for ${done} stores. Includes -2° correction.`;rerender()}
+async function fetchWeather(s){
+  try{
+    const response=await fetch(`/.netlify/functions/weather?lat=${encodeURIComponent(s.lat)}&lon=${encodeURIComponent(s.lon)}`,{cache:'no-store'});
+    if(!response.ok)return null;
+    const data=await response.json();
+    const timezone=data.timezone;
+    if(!timezone||!data.hourly)return null;
+    // Open-Meteo timezone=auto sets both timestamps and timezone for this exact location.
+    const t=overnightLow(data,timezone);
+    if(IS_QR && QR_STORE_ID===s.store)qrTimezone=timezone;
+    return t;
+  }catch{return null;}
+}
+async function loadWeather(){weatherByStore={};const st=document.getElementById('status'),fill=document.getElementById('fill');st.textContent='Loading weather…';fill.style.width='0%';let i=0,done=0;async function worker(){while(i<STORES.length){const s=STORES[i++];weatherByStore[s.store]=await fetchWeather(s);done++;fill.style.width=Math.round(done/STORES.length*100)+'%';st.textContent=`Loading weather… ${done} of ${STORES.length}`;rerender()}}await Promise.all(Array.from({length:10},worker));const ok=Object.values(weatherByStore).filter(t=>t!==null).length;st.textContent=`Weather available for ${ok} of ${done} stores. Includes -2° correction.`;rerender()}
+function htmlSafe(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function qrList(title,items,instruction){
+  return items.length?`<div class="qr-panel"><h2>${title} (${items.length})</h2><p class="qr-help">${htmlSafe(instruction)}</p><ul class="qr-products">${items.map(x=>`<li>${htmlSafe(x)}</li>`).join('')}</ul></div>`:'';
+}
+function qrContent(s,t,w){
+  if(t===null||!Number.isFinite(t)||!Number.isInteger(w)||w<1||w>53){
+    return '<div class="qr-outcome unavailable">Recommendations unavailable</div><p class="qr-help">Weather or grower calendar data is unavailable. Do not interpret this as no protection needed. Follow your store protection procedures.</p>';
+  }
+  const scheduled=scheduledRules(w);
+  if(!scheduled.length)return '<div class="qr-outcome unavailable">No product groups scheduled for this grower week.</div>';
+  const a=actions(t,w);
+  if(!a.move.length&&!a.cover.length)return '<div class="qr-outcome none">No Protection Required Tonight</div>';
+  return `<div class="qr-outcome ${level(a)}">${a.move.length} Move Inside · ${a.cover.length} Cover</div>`+
+    qrList('Move Inside',a.move,a.mi)+qrList('Cover',a.cover,a.ci);
+}
+function renderQr(s,t,status=''){
+  const el=document.getElementById('qrview');
+  if(!s){el.innerHTML='<div class="qr-panel"><h1>Store not found</h1><p>This QR code does not match a Meijer store in the current list.</p></div>';return;}
+  const tz=qrTimezone||approximateStoreTimezone(s);
+  const w=week();
+  el.innerHTML=`${IS_DEMO?'<div class="qr-demo-banner">DEMO MODE — SAMPLE DATA ONLY</div>':''}
+    <div class="qr-head"><div><div class="qr-label">Meijer Cold Protection</div><div class="qr-store">Store ${htmlSafe(s.store)}</div><div class="qr-meta">${htmlSafe(s.city)}, ${htmlSafe(s.state)} · ${htmlSafe(s.region)}</div></div><button class="btn" id="qrrefresh">Refresh</button></div>
+    <div class="qr-panel"><div class="qr-label">Tonight's overnight low (6 PM–8 AM)</div><div class="qr-low">${t===null?'—':htmlSafe(tempText(t))}</div><div class="qr-meta">Grower Week: ${w===null?'Unavailable':w} · ${htmlSafe(tz)}</div><p class="qr-help">${IS_DEMO?'Simulated temperature; no live weather used.':'Forecast includes a 2°F downward adjustment.'}</p>${status?`<p class="qr-help">${htmlSafe(status)}</p>`:''}</div>
+    ${IS_DEMO?`<div class="qr-panel"><div class="qr-demo-controls"><label>Sample Grower Week<input id="demoweek" type="number" min="1" max="53" value="${demoWeek}"></label><label>Sample low (°F)<input id="demotemp" type="number" min="-40" max="120" value="${demoTemperature}"></label><button class="btn" id="demoapply">Apply samples</button></div></div>`:''}
+    ${qrContent(s,t,w)}<p class="qr-help">Store-specific guidance is based on the scheduled products and current protection rules. Confirm actual site conditions and follow management instructions.</p>`;
+  document.getElementById('qrrefresh').onclick=()=>IS_DEMO?renderQr(s,demoTemperature,'Demo refreshed'):loadQrWeather(s);
+  if(IS_DEMO)document.getElementById('demoapply').onclick=()=>{
+    const nw=Number(document.getElementById('demoweek').value),nt=Number(document.getElementById('demotemp').value);
+    if(!Number.isInteger(nw)||nw<1||nw>53||!Number.isFinite(nt)||nt< -40||nt>120){alert('Enter a week from 1–53 and a temperature from -40°F to 120°F.');return;}
+    demoWeek=nw;demoTemperature=nt;renderQr(s,demoTemperature);
+  };
+}
+async function loadQrWeather(s){
+  qrTimezone=null;
+  renderQr(s,null,'Loading weather for this store…');
+  const t=await fetchWeather(s);
+  renderQr(s,t,t===null?'Forecast could not be loaded.':'Forecast updated.');
+}
+function startQrPage(){
+  const s=STORES.find(x=>x.store===QR_STORE_ID||String(Number(x.store))===QR_STORE_ID);
+  if(!s){renderQr(null,null);return;}
+  qrTimezone=approximateStoreTimezone(s);
+  if(IS_DEMO){renderQr(s,demoTemperature);return;}
+  loadQrWeather(s);
+}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.view));
-document.getElementById('settingssearch').oninput=renderSettings;getElementById('refresh').onclick=loadWeather;
+document.getElementById('settingssearch').oninput=renderSettings;document.getElementById('refresh').onclick=loadWeather;
 document.getElementById('save').onclick=()=>{selected=new Set(draft);localStorage.setItem(KEY,JSON.stringify([...selected].sort()));show('my')};document.getElementById('cancel').onclick=()=>{draft=new Set(selected);show('my')};
-sdocument.getElementById('week').textContent = week();
-show('my');loadWeather();
+if(IS_QR){
+  document.body.classList.add('qr-mode');
+  startQrPage();
+} else {
+  document.getElementById('week').textContent = week()??'—';
+  show('my');loadWeather();
+}
 </script></body></html>
