@@ -14,12 +14,9 @@
 <div class="toprow"><div><h1>Meijer Cold Protection</h1><p class="sub">Store-level overnight protection guidance</p></div><button id="refresh" class="btn">Refresh</button></div>
 <div class="controls">
 <div class="control"><label>Grower Week</label><input id="week" type="number" value="13" min="1" max="53"></div>
-<div class="control"><label>Test Temperature</label><input id="testtemp" type="number" value="32" min="-20" max="80"></div>
-<div class="control" style="grid-column:1/-1"><label>Testing</label><div class="toggle"><input id="testmode" type="checkbox"><span>Use fake temperature for all stores</span></div></div>
 </div>
 <div id="status" class="status">Preparing weather load…</div><div class="bar"><div id="fill"></div></div>
 </header>
-<div id="banner" class="banner hidden"></div>
 <main class="content">
 <section id="myview"><div class="sectionhead"><div><h2>My Stores</h2><div id="mycount" class="note"></div></div></div><div id="mysummary" class="summary"></div><div id="mylist" class="list"></div></section>
 <section id="allview" class="hidden"><div class="sectionhead"><div><h2>All Stores</h2><div class="note">Search or filter by market</div></div></div><input id="search" class="search" placeholder="Search store, city, state, or ZIP"><div id="allfilters" class="filters"></div><div id="allsummary" class="summary"></div><div id="alllist" class="list"></div></section>
@@ -934,11 +931,11 @@ const RULES = [
   }
 ];
 const KEY='meijerColdProtectionSelectedStores',CORRECTION_F=2;
-let weatherByStore={},testMode=false,testTemp=32,currentView='my',returnView='my',allMarket='ALL',settingsMarket='ALL';
+let weatherByStore={},currentView='my',returnView='my',allMarket='ALL',settingsMarket='ALL';
 let selected=loadSelected(),draft=new Set(selected);
 function loadSelected(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return new Set(Array.isArray(x)?x:[])}catch{return new Set()}}
 function week(){return Number(document.getElementById('week').value||13)}
-function low(s){return testMode?testTemp:weatherByStore[s.store]}
+function low(s){return weatherByStore[s.store]}
 function inWeek(r,w){return !((r.fw!==null&&w<r.fw)||(r.lw!==null&&w>r.lw))}
 function action(r,t){if(t<27)return[r.b27a,r.b27d];if(t<=35)return[r.a2835,r.d2835];if(t<=39)return[r.a3639,r.d3639];if(t<=44)return[r.a4044,r.d4044];return[r.a4550,r.d4550]}
 function actions(t,w){let move=[],cover=[],mi='',ci='';if(t==null||Number.isNaN(t))return{move,cover,mi,ci};RULES.forEach(r=>{if(!inWeek(r,w))return;const[a,d]=action(r,t);if(a==='Move Inside'){move.push(r.name);if(!mi)mi=d||''}if(a==='Cover'){cover.push(r.name);if(!ci)ci=d||''}});return{move,cover,mi:mi||'Rack product and bring inside if possible',ci:ci||'Cover exposed tables with frost cloth'}}
@@ -959,11 +956,10 @@ function renderDetail(s){const t=low(s),a=actions(t,week()),l=level(a),el=docume
 function showDetail(s){returnView=currentView;currentView='detail';['myview','allview','settingsview'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('detailview').classList.remove('hidden');document.getElementById('savebar').classList.add('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));renderDetail(s);scrollTo(0,0)}
 function show(v){currentView=v;document.getElementById('myview').classList.toggle('hidden',v!=='my');document.getElementById('allview').classList.toggle('hidden',v!=='all');document.getElementById('settingsview').classList.toggle('hidden',v!=='settings');document.getElementById('detailview').classList.add('hidden');document.getElementById('savebar').classList.toggle('hidden',v!=='settings');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));if(v==='my')renderMy();if(v==='all')renderAll();if(v==='settings'){draft=new Set(selected);renderSettings()}scrollTo(0,0)}
 function rerender(){if(currentView==='my')renderMy();else if(currentView==='all')renderAll();else if(currentView==='settings')renderSettings()}
-function updateTest(){testMode=document.getElementById('testmode').checked;testTemp=Number(document.getElementById('testtemp').value);if(Number.isNaN(testTemp))testTemp=32;const b=document.getElementById('banner');b.classList.toggle('hidden',!testMode);b.textContent=`TEST MODE ON — every store is using a fake low of ${Math.round(testTemp)}°.`;if(testMode)document.getElementById('status').textContent=`Test Mode is ON. Fake low: ${Math.round(testTemp)}°.`;rerender()}
 function fetchWeather(s){return fetch(`/.netlify/functions/weather?lat=${s.lat}&lon=${s.lon}`).then(r=>r.json()).then(d=>{const times=d.hourly?.time||[],temps=d.hourly?.temperature_2m||[];if(!times.length||!temps.length)return null;const now=new Date(),end=new Date(now);end.setHours(8,0,0,0);if(now.getHours()>=8)end.setDate(end.getDate()+1);let min=null;for(let i=0;i<times.length;i++){const t=new Date(times[i]);if(t>=now&&t<=end){const v=temps[i];if(v!=null&&(min===null||v<min))min=v}}return min==null?null:min-CORRECTION_F}).catch(()=>null)}
 async function loadWeather(){weatherByStore={};const st=document.getElementById('status'),fill=document.getElementById('fill');st.textContent='Loading weather…';fill.style.width='0%';let i=0,done=0;async function worker(){while(i<STORES.length){const s=STORES[i++];weatherByStore[s.store]=await fetchWeather(s);done++;fill.style.width=Math.round(done/STORES.length*100)+'%';st.textContent=`Loading weather… ${done} of ${STORES.length}`;rerender()}}await Promise.all(Array.from({length:10},worker));st.textContent=`Weather loaded for ${done} stores. Includes -2° correction.`;rerender()}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.view));
-document.getElementById('search').oninput=renderAll;document.getElementById('settingssearch').oninput=renderSettings;document.getElementById('week').oninput=rerender;document.getElementById('testmode').onchange=updateTest;document.getElementById('testtemp').oninput=updateTest;document.getElementById('refresh').onclick=loadWeather;
+document.getElementById('search').oninput=renderAll;document.getElementById('settingssearch').oninput=renderSettings;document.getElementById('week').oninput=rerender;document.getElementById('refresh').onclick=loadWeather;
 document.getElementById('save').onclick=()=>{selected=new Set(draft);localStorage.setItem(KEY,JSON.stringify([...selected].sort()));show('my')};document.getElementById('cancel').onclick=()=>{draft=new Set(selected);show('my')};
 show('my');loadWeather();
 </script></body></html>
