@@ -13,7 +13,7 @@
 <header class="top">
 <div class="toprow"><div><h1>Meijer Cold Protection</h1><p class="sub">Store-level overnight protection guidance</p></div><button id="refresh" class="btn">Refresh</button></div>
 <div class="controls">
-<div class="control"><label>Grower Week</label><input id="week" type="number" value="13" min="1" max="53"></div>
+<div class="control"><label>Grower Week</label><span id="week" style="font-size:17px;font-weight:800"></span></div>
 </div>
 <div id="status" class="status">Preparing weather load…</div><div class="bar"><div id="fill"></div></div>
 </header>
@@ -934,7 +934,30 @@ const KEY='meijerColdProtectionSelectedStores',CORRECTION_F=2;
 let weatherByStore={},currentView='my',returnView='my',allMarket='ALL',settingsMarket='ALL';
 let selected=loadSelected(),draft=new Set(selected);
 function loadSelected(){try{const x=JSON.parse(localStorage.getItem(KEY)||'[]');return new Set(Array.isArray(x)?x:[])}catch{return new Set()}}
-function week(){return Number(document.getElementById('week').value||13)}
+function week() {
+  const week1Starts = {
+    2027: "2027-01-03"
+  };
+
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+
+  const years = Object.keys(week1Starts)
+    .map(Number)
+    .sort((a, b) => b - a);
+
+  for (const year of years) {
+    const [y, m, d] = week1Starts[year].split("-").map(Number);
+    const start = new Date(y, m - 1, d, 12);
+
+    if (today >= start) {
+      const days = Math.round((today - start) / 86400000);
+      return Math.floor(days / 7) + 1;
+    }
+  }
+
+  return null;
+}
 function low(s){return weatherByStore[s.store]}
 function inWeek(r,w){return !((r.fw!==null&&w<r.fw)||(r.lw!==null&&w>r.lw))}
 function action(r,t){if(t<27)return[r.b27a,r.b27d];if(t<=35)return[r.a2835,r.d2835];if(t<=39)return[r.a3639,r.d3639];if(t<=44)return[r.a4044,r.d4044];return[r.a4550,r.d4550]}
@@ -959,7 +982,8 @@ function rerender(){if(currentView==='my')renderMy();else if(currentView==='all'
 function fetchWeather(s){return fetch(`/.netlify/functions/weather?lat=${s.lat}&lon=${s.lon}`).then(r=>r.json()).then(d=>{const times=d.hourly?.time||[],temps=d.hourly?.temperature_2m||[];if(!times.length||!temps.length)return null;const now=new Date(),end=new Date(now);end.setHours(8,0,0,0);if(now.getHours()>=8)end.setDate(end.getDate()+1);let min=null;for(let i=0;i<times.length;i++){const t=new Date(times[i]);if(t>=now&&t<=end){const v=temps[i];if(v!=null&&(min===null||v<min))min=v}}return min==null?null:min-CORRECTION_F}).catch(()=>null)}
 async function loadWeather(){weatherByStore={};const st=document.getElementById('status'),fill=document.getElementById('fill');st.textContent='Loading weather…';fill.style.width='0%';let i=0,done=0;async function worker(){while(i<STORES.length){const s=STORES[i++];weatherByStore[s.store]=await fetchWeather(s);done++;fill.style.width=Math.round(done/STORES.length*100)+'%';st.textContent=`Loading weather… ${done} of ${STORES.length}`;rerender()}}await Promise.all(Array.from({length:10},worker));st.textContent=`Weather loaded for ${done} stores. Includes -2° correction.`;rerender()}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.view));
-document.getElementById('search').oninput=renderAll;document.getElementById('settingssearch').oninput=renderSettings;document.getElementById('week').oninput=rerender;document.getElementById('refresh').onclick=loadWeather;
+document.getElementById('settingssearch').oninput=renderSettings;getElementById('refresh').onclick=loadWeather;
 document.getElementById('save').onclick=()=>{selected=new Set(draft);localStorage.setItem(KEY,JSON.stringify([...selected].sort()));show('my')};document.getElementById('cancel').onclick=()=>{draft=new Set(selected);show('my')};
+sdocument.getElementById('week').textContent = week();
 show('my');loadWeather();
 </script></body></html>
